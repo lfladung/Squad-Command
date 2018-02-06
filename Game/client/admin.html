@@ -1,0 +1,53 @@
+<html>
+
+  <head>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="client/js/adminModel.js"></script>
+    <script src="client/js/adminView.js"></script>
+    <link rel="stylesheet" href="client/css/admin.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="games"></div>
+      <div id="sockets"></div>
+      <div id="selected"></div>
+    </div>
+  </body>
+
+  <script>
+    view = new View();
+    model = new Model();
+
+    $(document).ready(() =>
+    {
+      socket = io();
+      start();
+      socket.on('dashboard', setupModel);
+      socket.on('remove game', (data) => model.removeGame(data));
+      socket.on("add game", (data) => model.addGame(data));
+      socket.on("add socket", (data) => model.addPlayer(data));
+      socket.on("remove socket", (data) => model.removePlayer(data));
+    });
+
+    function setupModel(data)
+    {
+      model = new Model(data.activeGames, data.activeSockets);
+      model.registerObserver(view);
+    }
+
+    /**
+     * Start the page
+     */
+    function start()
+    {
+      socket.emit('start',
+      {
+        uType: 1 // 1 is admin
+      });
+    }
+
+  </script>
+
+</html>

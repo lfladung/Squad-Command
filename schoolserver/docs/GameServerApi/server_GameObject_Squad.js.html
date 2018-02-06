@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server/GameObject/Squad.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server/GameObject/Squad.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Unit = require('./Unit.js').Unit;
+const Inventory = require('../Inventory/Inventory.js').Inventory;
+
+const Utilities = require('../Utilities/Utils.js');
+const Vector = Utilities.Vector;
+const Utils = Utilities.Utils;
+const type = Utils.type;
+
+SPACING = 10;
+UNIT_SIZE = 5;
+MAX_SIZE = 30;
+MAX_ROW_SIZE = 10;
+COLLISION_DISTANCE = 20;
+
+
+/**
+ * Class representing a squad
+ */
+class Squad
+{
+
+	/**
+	 * Creates a squad
+	 *
+	 * @param {number} id the id of this squad
+	 * @param {number} numUnits the number of units in this squad
+	 * @param {Vector} position the position that this squad should start at
+	 * @param {number} speed the speed of this squad's units
+	 * @param {Inventory} inv the inventory assigned to this squad
+	 * @param {Player} player the player that owns this squad
+	 */
+	constructor(id, numUnits, position, speed, inv, player)
+	{
+		numUnits = (numUnits &lt;= MAX_SIZE) ? numUnits : MAX_SIZE; // ensure size doesn't exceed the max
+		this.units = [];
+		this.defaultLayout = [];
+		this.id = id;
+		this.position = new Vector(position.x, position.y);
+		this.inventory = inv;
+		this.player = player;
+		this.generateUnits(numUnits, speed);
+		this.maxRowSize = MAX_ROW_SIZE;
+		this.spacing = SPACING;
+		this.direction = new Vector(position.x, position.y - 1);
+		this.defaultCenter = this.position;
+		this.selectionBox = this.generateSelectionBox();
+		this.heading = Math.PI / 2;
+	}
+
+	/**
+	 * generateSelectionBox - Generates defeault selection box for this squad
+	 * Requires update inside of update()
+	 *
+	 * @return {Object} the selection box for this squad
+	 */
+	generateSelectionBox()
+	{
+		let numRows = this.units.length / MAX_ROW_SIZE;
+		let unitsInARow = this.units.length / numRows;
+		let deltaX = unitsInARow / 2 * SPACING;
+		let deltaY = (numRows / 2 &lt; 1) ? UNIT_SIZE / 2 : (numRows % 2 == 0 ? SPACING : (SPACING + UNIT_SIZE) / 2 + UNIT_SIZE);
+		let tright = new Vector(this.position.x + deltaX, this.position.y - deltaY);
+		let bleft = new Vector(this.position.x - deltaX, this.position.y + deltaY);
+		return {
+			topRight: tright,
+			bottomLeft: bleft
+		};
+	}
+
+
+	/**
+	 * update - Performs an update on this squad, removes this squad if it has no more units,
+	 * checks to see if this squads average position has moved and if its region has changed
+	 */
+	update()
+	{
+		if (this.units.length == 0)
+		{
+			this.player.removeSquad(this);
+			return;
+		}
+		else
+		{
+			let lastPos = {
+				x: this.position.x,
+				y: this.position.y
+			}
+			let pos = Utils.average(this.units);
+			this.selectionBox.topRight = Utils.translationMatrix(this.selectionBox.topRight, lastPos, pos);
+			this.selectionBox.bottomLeft = Utils.translationMatrix(this.selectionBox.bottomLeft, lastPos, pos);
+			if (pos.x != this.position.x || pos.y != this.position.y)
+			{
+				this.position = pos;
+				this.player.game.map.checkRegion(lastPos, this);
+				this.checkCollision();
+			}
+		}
+	}
+
+
+	/**
+	 * checkCollision - checks to see if this squad is within range of any enemy units, if so
+	 * calls collision with the colliding squad
+	 */
+	checkCollision()
+	{
+		let self = this;
+		let nearEnemySquads = this.player.game.map.getNearby(this, (o) => o instanceof Squad &amp;&amp; o.units.length > 0 &amp;&amp;
+			o.player != self.player &amp;&amp; self.position.distance(o.position) &lt;= COLLISION_DISTANCE);
+
+		nearEnemySquads.forEach((e) =>
+		{
+			self.collision(e);
+			e.collision(self);
+		});
+	}
+
+
+	/**
+	 * collision - sets this squads units to AI mode so that they will attack
+	 */
+	collision(e)
+	{
+		if (this.units[0].moveType != type.AI)
+			this.units.forEach((u) =>
+			{
+				u.setMoveType(type.AI);
+			});
+	}
+
+
+	/**
+	 * halt - stops this squads units
+	 */
+	halt()
+	{
+		this.units.forEach(function(u)
+		{
+			u.setDestination([]);
+			u.setMoveType(type.NONE);
+		});
+	}
+
+
+	/**
+	 * generateUnits - generate the units in a rectangular shape
+	 *
+	 * @param {number} numUnits the number of units to be created
+	 * @param {number} speed the speed of the units to be created
+	 */
+	generateUnits(numUnits, speed)
+	{
+		var numLines = Math.ceil(numUnits / 10);
+		var pos = new Vector(this.position.x, this.position.y);
+		if (numLines % 2 == 0)
+			pos.y += SPACING / 2;
+		var half = Math.floor(numLines / 2);
+		pos.y -= SPACING * half;
+		var unitsLeft = numUnits;
+		for (var i = 0; i &lt; numLines; i++)
+		{
+			var numInRow = (unitsLeft % MAX_ROW_SIZE == 0) ? MAX_ROW_SIZE : unitsLeft % MAX_ROW_SIZE;
+			this.generateRow(numInRow, pos, speed);
+			pos.y += SPACING;
+			unitsLeft -= numInRow;
+		}
+
+		if (this.player.squads.length === 0)
+		{
+			this.units[Math.floor(this.units.length / 2)].isKing = true;
+			this.player.king = this.units[Math.floor(this.units.length / 2)];
+		}
+	}
+
+
+	/**
+	 * generateRow - generates a given row within the rectangle formation
+	 *
+	 * @param {number} numUnits the number of units to be in this row
+	 * @param {Vector} center the center of this row
+	 * @param {number} speed the speed of the units to be created
+	 */
+	generateRow(numUnits, center, speed)
+	{
+		var pos = new Vector(center.x, center.y);
+		if (numUnits % 2 == 0)
+			pos.x += SPACING / 2;
+		var half = Math.floor(numUnits / 2);
+		pos.x -= SPACING * half;
+		for (var i = 0; i &lt; numUnits; i++)
+		{
+			this.defaultLayout.push(new Vector(pos.x, pos.y));
+			this.units.push(new Unit(['unit'], new Vector(pos.x, pos.y), new Vector(UNIT_SIZE, UNIT_SIZE), this.units.length, speed, this, this.player));
+			pos.x += SPACING;
+		}
+	}
+
+
+	/**
+	 * move - calculates the rotated positions of all the units in this squad, performs
+	 * A* to find the paths for each unit
+	 *
+	 * @param {Vector} destCenter the center of the new squad position
+	 * @param {GameMap} map the map for performing A*
+	 */
+	move(destCenter, map)
+	{
+		let centerTransform = Utils.newOrigin(this.direction, this.defaultCenter);
+		let destCenterTransform = Utils.newOrigin(destCenter, this.defaultCenter);
+
+		// Left rotation for units
+		let newDestAngle = this.direction.angleBetweenTwoVectors(centerTransform, destCenterTransform);
+		if (centerTransform.crossProduct(destCenterTransform) &lt; 0)
+		{
+			// Right rotation for units
+			newDestAngle = (2 * Math.PI) - newDestAngle;
+		}
+		this.heading = (this.heading + newDestAngle) % (Math.PI * 2);
+		/*
+		 * We will transform the unit position about the squad center by passing their coordinates through
+		 * a transformation matrix with the respective angle at which the squad is rotating.
+		 */
+		let flip = false;
+		let flipArray = new Array();
+		let size = this.units.length;
+		if (newDestAngle > Math.PI / 2 &amp;&amp; newDestAngle &lt; 3 * Math.PI / 2)
+		{
+			flip = true;
+		}
+		for (let i = 0; i &lt; size; i++)
+		{
+			this.units[i].setMoveType(type.CLICK);
+			if (!flip)
+			{
+				this.units[i].defaultPos = Utils.translationMatrix(this.defaultLayout[i], this.defaultCenter, this.position);
+				// this.units[i].defaultPos = Utils.rotationMatrix(this.units[i].defaultPos, this.position, destCenter, newDestAngle);
+				// this.defaultLayout[i] = JSON.parse(JSON.stringify(this.units[i].defaultPos));
+
+				// if(Utils.outsideRectangle(this.units[i].defaultPos, new Vector(0, map.size.y), new Vector(map.size.x, 0)))
+				// {
+				// 	Utils.morphAlongMapEdge(this.units[i], map);
+				// 	this.units[i].setDestination(map.aStar(this.units[i].position, this.units[i].defaultPos));
+				// }
+				// else
+				// {
+				// 	this.units[i].setDestination(map.aStar(this.units[i].position, this.defaultLayout[i]));
+				// 	this.units[i].defaultPos = this.defaultLayout[i];
+				// }
+				this.edgeAvoidance(this, destCenter, newDestAngle, map, this.units[i].defaultPos, i);
+			}
+			else
+			{
+				flipArray.push(Utils.translationMatrix(this.defaultLayout[size - i - 1], this.defaultCenter, this.position));
+			}
+		}
+
+		if (flip)
+		{
+			for (let i = 0; i &lt; size; i++)
+			{
+				// this.units[i].defaultPos = Utils.rotationMatrix(flipArray[i], this.position, destCenter, newDestAngle);
+				// this.defaultLayout[i] = JSON.parse(JSON.stringify(this.units[i].defaultPos));
+
+				// if(Utils.outsideRectangle(this.units[i].defaultPos, new Vector(0, map.size.y), new Vector(map.size.x, 0)))
+				// {
+				// 	Utils.morphAlongMapEdge(this.units[i], map);
+				// 	this.units[i].setDestination(map.aStar(this.units[i].position, this.units[i].defaultPos));
+				// }
+				// else
+				// {
+				// 	this.units[i].setDestination(map.aStar(this.units[i].position, this.defaultLayout[i]));
+				// 	this.units[i].defaultPos = this.defaultLayout[i];
+				// }
+				this.edgeAvoidance(this, destCenter, newDestAngle, map, flipArray[i], i);
+			}
+			// this.units[i].position = this.units[i].defaultPos;
+		}
+		this.defaultCenter = Utils.average(this.defaultLayout);
+		this.direction = Utils.rotationMatrix(this.direction, this.position, destCenter, newDestAngle);
+	}
+
+	/**
+	 * edgeAvoidance - Helper function to prevent units from exiting map boundary
+	 * @param {Squad} squad
+	 * 		Our current moving squad
+	 * @param {Vector} destination
+	 * 		Our destination, relative to the center of the squad
+	 * @param {number} theta
+	 * 		Rotation angle from squads initial direction
+	 * @param {GameMap} map
+	 * 		The map we are in
+	 * @param {Unit} toBeRotated
+	 * 		The unit which will be rotated
+	 * 		(toBeRotated is only necessary to allow 'flipArray' occurrences)
+	 * @param {number} index
+	 * 		The ith troop we are moving
+	 */
+	edgeAvoidance(squad, destination, theta, map, toBeRotated, index)
+	{
+		// Unit rotation and deep copy of defaultLayout
+		squad.units[index].defaultPos = Utils.rotationMatrix(toBeRotated, squad.position, destination, theta);
+		squad.defaultLayout[index] = JSON.parse(JSON.stringify(squad.units[index].defaultPos));
+
+		// Find if unit will walk out of map
+		if (Utils.outsideRectangle(squad.units[index].defaultPos, new Vector(0, map.size.y), new Vector(map.size.x, 0)))
+		{
+			// Default to a position just inside where they would have walked out
+			Utils.morphAlongMapEdge(squad.units[index], map);
+			squad.units[index].setDestination(map.aStar(squad.units[index].position, squad.units[index].defaultPos));
+		}
+		else
+		{
+			// Default movement, defaultLayout was stored for when returning from edgeAvoidance() occurrence
+			squad.units[index].setDestination(map.aStar(squad.units[index].position, squad.defaultLayout[index]));
+			squad.units[index].defaultPos = this.defaultLayout[index];
+		}
+	}
+
+
+	/**
+	 * setInventory - sets the inventory of this squad and its units
+	 *
+	 * @param {Inventory} inv the inventory to be set
+	 */
+	setInventory(inv)
+	{
+		this.units.forEach(function(u)
+		{
+			u.inventory.setWeapon(inv.weapon);
+			u.inventory.setArmor(inv.armor);
+		});
+	}
+
+
+	/**
+	 * select - sets this squads units selected value to true
+	 */
+	select()
+	{
+		this.units.forEach((u) => u.selected.value = true);
+	}
+
+
+	/**
+	 * deselect - deselects this squads units
+	 */
+	deselect()
+	{
+		this.units.forEach((u) => u.selected.value = false);
+	}
+
+
+	/**
+	 * removeUnit - removes a given unit from this squad
+	 *
+	 * @param {Unit} u the unit to remove	
+	 */
+	removeUnit(u)
+	{
+		this.units = this.units.filter((unit) => unit != u);
+	}
+
+}
+
+exports.Squad = Squad;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Armor.html">Armor</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Equipment.html">Equipment</a></li><li><a href="Game.html">Game</a></li><li><a href="GameMap.html">GameMap</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="Heap.html">Heap</a></li><li><a href="Inventory.html">Inventory</a></li><li><a href="PathNode.html">PathNode</a></li><li><a href="Player.html">Player</a></li><li><a href="Projectile.html">Projectile</a></li><li><a href="Squad.html">Squad</a></li><li><a href="Statistics.html">Statistics</a></li><li><a href="Unit.html">Unit</a></li><li><a href="Weapon.html">Weapon</a></li></ul><h3>Global</h3><ul><li><a href="global.html#checkUserId">checkUserId</a></li><li><a href="global.html#comparator">comparator</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#endGame">endGame</a></li><li><a href="global.html#getDashInfo">getDashInfo</a></li><li><a href="global.html#heuristic">heuristic</a></li><li><a href="global.html#loadMaps">loadMaps</a></li><li><a href="global.html#removeGame">removeGame</a></li><li><a href="global.html#removeSocket">removeSocket</a></li><li><a href="global.html#setUpPlayer">setUpPlayer</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#updateAdmins">updateAdmins</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 30 2017 20:50:43 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

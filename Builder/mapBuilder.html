@@ -1,0 +1,182 @@
+<html>
+
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="./Vector.js"></script>
+    <script src="./delaunay.js"></script>
+  </head>
+  <form id='mapForm'>
+    MAP<br>
+    <input id='mapx' type='number' placeholder='x' value="20" required><br>
+    <input id='mapy' type='number' placeholder='y' value="20" required><br>
+    <input id='mapFile' type='text' placeholder='image file' value="i" required><br>
+    <input type='submit'>
+  </form>
+  <form id='gameObjectsForm'>
+    OBSTACLES<br>
+    <input id='width' type='number' placeholder='width' value="2" required><br>
+    <input id='height' type='number' placeholder='height' value="2" required><br>
+    <input id='posx' type='number' placeholder='x position' value="10" required><br>
+    <input id='posy' type='number' placeholder='y position' value="10" required><br>
+    <input id='objFile' type='text' placeholder='image file' value="i" required><br>
+    <input type='submit'>
+  </form>
+  <br><br><br>
+  <canvas id='canvas' width="500" height="500"></canvas>
+
+  <body>
+    <script>
+      DEFAULT_SIZE = 500;
+      TILE_SIZE = 10;
+      $(document).ready(function()
+      {
+
+        var obstacles = [];
+
+        var map = {
+          image: null,
+          obstacles: obstacles,
+          size:
+          {
+            x: DEFAULT_SIZE,
+            y: DEFAULT_SIZE
+          }
+        };
+
+
+
+        $('#gameObjectsForm').submit(function(e)
+        {
+          e.preventDefault();
+
+          var hitbox = {
+            x: parseInt($('#width').val()),
+            y: parseInt($('#height').val())
+          };
+          var position = {
+            x: parseInt($('#posx').val()),
+            y: parseInt($('#posy').val())
+          };
+          var image = $('#objFile').val();
+
+
+
+          obstacles.push(
+          {
+            hitbox: hitbox,
+            position: position,
+            image: image
+          });
+          return false;
+        });
+
+        $('#mapForm').submit(function(e)
+        {
+          e.preventDefault();
+
+          var size = {
+            x: parseInt($('#mapx').val()),
+            y: parseInt($('#mapy').val())
+          };
+          var image = $('#mapFile').val();
+          map = {
+            size: size,
+            image: image,
+            obstacles: obstacles
+          };
+          let hardnessMap = generateHardnessMap(size.x, size.y);
+          let nodes = [];
+          nodes.push(new MapNode(0, 0));
+          nodes.push(new MapNode(0, size.y - 1));
+          nodes.push(new MapNode(size.x - 1, 0));
+          nodes.push(new MapNode(size.x - 1, size.y - 1));
+
+          obstacles.forEach((o) =>
+          {
+            let l = o.position.x - o.hitbox.x / 2;
+            let r = o.position.x + o.hitbox.x / 2;
+            let t = o.position.y - o.hitbox.y / 2;
+            let b = o.position.y + o.hitbox.y / 2;
+            let lt = new MapNode(l, t);
+            let lb = new MapNode(l, b);
+            let rt = new MapNode(r, t);
+            let rb = new MapNode(r, b);
+
+            // lt.addNeighbors([lb, rt]);
+            // lb.addNeighbors([lt, rb]);
+            // rt.addNeighbors([lt, rb]);
+            // rb.addNeighbors([lb, rt]);
+
+            nodes.push(lt);
+            nodes.push(rt);
+            nodes.push(lb);
+            nodes.push(rb);
+          });
+
+          let mesh = delaunay(nodes, hardnessMap);
+          renderNavMesh(nodes);
+          console.log(JSON.stringify(map));
+          return false;
+        });
+
+        function generateHardnessMap(sizeX, sizeY)
+        {
+          var hardnessMap = [];
+          for (var y = 0; y < Math.floor(sizeY / TILE_SIZE); y++)
+          {
+            hardnessMap.push([]);
+            for (var x = 0; x < Math.floor(sizeX / TILE_SIZE); x++)
+              hardnessMap[y].push(0);
+          }
+          obstacles.forEach(function(i)
+          {
+            var startX = ((i.position.x - i.hitbox.x / 2) / TILE_SIZE >= 0) ?
+              Math.floor(Math.floor(i.position.x - i.hitbox.x / 2) / TILE_SIZE) : 0;
+            var startY = ((i.position.y - i.hitbox.y / 2) / TILE_SIZE >= 0) ?
+              Math.floor(Math.floor(i.position.y - i.hitbox.y / 2) / TILE_SIZE) : 0;
+            var endX = ((i.position.x + i.hitbox.x / 2) / TILE_SIZE < sizeX) ?
+              Math.floor(Math.floor(i.position.x + i.hitbox.x / 2) / TILE_SIZE) : (sizeX - 1) / TILE_SIZE;
+            var endY = ((i.position.y + i.hitbox.y / 2) / TILE_SIZE < sizeY) ?
+              Math.floor(Math.floor(i.position.y + i.hitbox.y / 2) / TILE_SIZE) : (sizeY - 1) / TILE_SIZE;
+
+            for (var y = startY; y <= endY; y++)
+              for (var x = startX; x <= endX; x++)
+                hardnessMap[y][x] = 1;
+          });
+          return hardnessMap;
+        }
+      });
+
+      function renderNavMesh(nodes)
+      {
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, 500, 500);
+
+        for (let i = 0; i < nodes.length; i++)
+        {
+          renderNode(nodes[i], open)
+        }
+      }
+
+      function renderNode(node, open)
+      {
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        ctx.arc(node.position.x * 10, node.position.y * 10, 10, 0, 360, false);
+
+        for (let j = 0; j < node.neighbors.length; j++)
+        {
+          let neighbor = node.neighbors[j];
+          ctx.beginPath();
+          ctx.moveTo(node.position.x * 10, node.position.y * 10);
+          ctx.lineTo(neighbor.position.x * 10, neighbor.position.y * 10);
+          ctx.stroke();
+          ctx.closePath();
+        }
+      }
+
+    </script>
+  </body>
+
+</html>

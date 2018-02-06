@@ -1,0 +1,12 @@
+{
+  "name": "game",
+  "version": "1.0.0",
+  "description": "rts game",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Connor Rust, Drew Underwood, Jose Lopez, Logan Fladungen",
+  "license": "ISC"
+}

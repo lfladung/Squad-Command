@@ -1,0 +1,123 @@
+canvas {
+  border: 1px solid black;
+}
+
+body {
+  background: #777;
+}
+
+#chat {
+  text-align:left;
+    position: absolute;
+    visibility: visible;
+    margin: auto;
+    margin-bottom:25px;
+    padding:10px;
+    background:#fff;
+    top: 30px;
+    left: 520px;
+    height:200px;
+    width:230px;
+    border:1px solid #ACD8F0;
+    overflow:auto;
+  }
+
+#message{
+  text-align:left;
+  position: absolute;
+  visibility: visible;
+  margin: auto;
+  margin-bottom:25px;
+  left: 520px;
+  top: 260px;
+  height: 30px;
+  width: 140px;
+  z-index: 200;
+}
+
+
+#message_error{
+  text-align:left;
+  position: absolute;
+  visibility: visible;
+  margin: auto;
+  margin-bottom:25px;
+  left: 520px;
+  top: 300px;
+  height: 30px;
+  width: 140px;
+  z-index: 200;
+}
+
+#submit{
+  position: absolute;
+  visibility: visible;
+  margin: auto;
+  margin-bottom:25px;
+  left: 672px;
+  top: 260px;
+  height: 30px;
+  width: 100px;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+input {
+  outline: none;
+}
+
+input#volumeslider {
+  width: 70px;
+}
+
+input[type='range'] {
+  -webkit-appearance: none !important;
+  margin: 0px;
+  padding: 0px;
+  background: #000;
+  height: 13px;
+  border-bottom: #333 1px solid;
+}
+
+input[type='range']::-ms-fill-lower {
+  background: #000;
+}
+
+input[type='range']::-ms-fill-upper {
+  background: #000;
+}
+
+input[type='range']::-moz-range-track {
+  border: none;
+  background: #000;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  background: radial-gradient(#FFF, #333);
+  height: 11px;
+  width: 11px;
+  border-radius: 100%;
+  cursor: pointer;
+}
+
+input[type='range']::-moz-range-thumb {
+  background: radial-gradient(#FFF, #333);
+  height: 11px;
+  width: 11px;
+  border-radius: 100%;
+  cursor: pointer;
+}
+
+input[type='range']::-ms-thumb {
+  -webkit-appearance: none !important;
+  background: radial-gradient(#FFF, #333);
+  height: 11px;
+  width: 11px;
+  border-radius: 100%;
+  cursor: pointer;
+}

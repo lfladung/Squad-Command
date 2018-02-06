@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const express = require('express');
+const app = express();
+const serv = require('http').Server(app);
+const Game = require('./server/Game.js').Game;
+const Utils = require('./server/Utilities/Utils.js').Utils;
+const fs = require('fs');
+
+// BEGIN SERVER SETUP
+
+PORT_NUMBER = process.env.PORT || 2000;
+var maps = JSON.parse(fs.readFileSync('./server/Navigation/map.json').toString());
+ADMIN_ID = 3151;
+
+
+/**
+ * Socket.emit -
+ *  &lt;li> "dashboard" = sends the dashboard info to the admin \n
+ *  &lt;li> "mode" = sends the current mode of the player to the player
+ *  &lt;li> "setup" = supplies initial information to the players of the game such as player id
+ *  &lt;li> "update" = sends updated game information to the player
+ *  &lt;li> "game over" = notifies players that the game is over
+ *  &lt;li> "messages" = notifies players that there was a message sent
+ */
+function emit()
+{}
+
+/**
+ * checkUserId - Checks to see if the user is an admin or not
+ *
+ * @param {number} id id of the user to check
+ * @return {boolean} returns true if the user is an admin, false otherwise
+ */
+var checkUserId = function(id)
+{
+	let i = Number(id);
+	return i === ADMIN_ID;
+}
+
+
+app.get('/', function(request, response)
+{
+	response.sendFile(__dirname + '/client/index.html');
+});
+app.get('/:userId', function(request, response)
+{
+	if (!checkUserId(request.params.userId))
+		response.sendFile(__dirname + '/client/index.html');
+	else
+		response.sendFile(__dirname + '/client/admin.html');
+});
+app.use('/client', express.static(__dirname + '/client'));
+
+serv.listen(PORT_NUMBER);
+console.log("Server online. \nRunning on port " + PORT_NUMBER);
+
+
+
+// END SERVER SETUP
+
+QUEUE = [];
+ACTIVE_SOCKETS = [];
+ACTIVE_GAMES = [];
+ADMIN_SOCKETS = [];
+
+
+/**
+ * removeSocket - removes the player with the given id from the list of ACTIVE_SOCKETS
+ * updates the Admins after removing the socket
+ *
+ * @param  {int} id the id of the socket to be removed
+ * @return {void}
+ */
+function removeSocket(id)
+{
+	QUEUE = QUEUE.filter((s) => s.id != id);
+	ACTIVE_SOCKETS = ACTIVE_SOCKETS.filter((s) => s.id != id);
+	updateAdmins();
+}
+
+
+/**
+ * setUpPlayer - sets up the player with all of the socket listeners and inserts the Player
+ *  into the Queue and the list of active sockets
+ *
+ * @param  {Socket} socket the new socket (player) to be added
+ * @return {void}
+ */
+function setUpPlayer(socket)
+{
+	socket.id = Utils.generateId(ACTIVE_SOCKETS);
+
+	QUEUE.push(socket);
+	ACTIVE_SOCKETS.push(socket);
+
+	if (QUEUE.length % 2 === 0) startGame();
+	socket.on('right click', (data) => socket.player.rightclick(data.mouse));
+	socket.on('left click', (data) => socket.player.leftclick(data.mouse));
+	socket.on('key change', (data) => socket.player.keyChange(data.keys));
+	socket.on('toggle mode', () => socket.player.toggleMode());
+	socket.on('message', (msg) => socket.game.sendMessage(msg));
+	socket.on('disconnect', () =>
+	{
+		removeSocket(socket.id);
+		if (socket.game)
+		{
+			socket.game.endGame();
+			removeGame(socket.game.id);
+		}
+	});
+
+
+}
+
+
+/**
+ * removeGame - removes the game with the given id from the list of games, updates
+ *  all admins after the remove
+ *
+ * @param  {type} id id of the game to be removed
+ * @return {void}
+ */
+function removeGame(id)
+{
+	ACTIVE_GAMES = ACTIVE_GAMES.filter((g) => g.id != id);
+	updateAdmins();
+}
+
+
+/**
+ * startGame - starts a new game with the first 2 sockets in the queue, then updates
+ *  the admins with the new game.
+ *
+ * @return {void}
+ */
+function startGame()
+{
+	var g = new Game([QUEUE.pop(), QUEUE.pop()], Utils.generateId(ACTIVE_GAMES), maps[0]);
+	g.run();
+	ACTIVE_GAMES.push(g);
+	updateAdmins();
+}
+
+
+/**
+ * loadMaps - loads the maps from the 'map.json' file
+ *
+ * @return {GameMap[]} the game maps that were stored in map.json
+ */
+function loadMaps()
+{
+	return JSON.parse(fs.readFileSync('map.json').toString());
+}
+
+
+/**
+ * updateAdmins - updates the connected admins with the dashboard info
+ *
+ * @return {void}
+ */
+function updateAdmins()
+{
+	let dashInfo = getDashInfo();
+	ADMIN_SOCKETS.forEach((s) =>
+	{
+		s.emit('dashboard', dashInfo);
+	});
+}
+
+
+/**
+ * endGame - ends the game with the given id, then notifies the connected admins
+ *
+ * @param  {type} id the id of the game that should be ended
+ * @return {void}
+ */
+function endGame(id)
+{
+	for (let i = 0; i &lt; this.ACTIVE_GAMES.length; i++)
+	{
+		if (ACTIVE_GAMES[i].id === i);
+		{
+			ACTIVE_GAMES[i].endGame();
+			updateAdmins();
+			return;
+		}
+	}
+}
+
+
+/**
+ * getDashInfo - gets the necessary dashboard info to be displayed for the admins
+ *
+ * @return {Object[]} array of objects, each containing the id's of both players and
+ *  the game id to be served to the player
+ */
+function getDashInfo()
+{
+	let games = [];
+	ACTIVE_GAMES.forEach((g) => games.push(
+	{
+		id: g.id,
+		p1id: g.sockets[0].id,
+		p2id: g.sockets[1].id
+	}));
+
+	return {
+		activeGames: games
+	};
+}
+
+var io = require('socket.io')(serv,
+{});
+
+io.sockets.on('connection', function(socket)
+{
+	// socket communications
+	socket.on('start', (data) =>
+	{
+		if (!data.isAdmin)
+			setUpPlayer(socket);
+		else
+		{
+			ADMIN_SOCKETS.push(socket);
+
+			socket.emit('dashboard', getDashInfo());
+			socket.on('end game', (data) => endGame(data.id));
+		}
+	});
+
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Armor.html">Armor</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Equipment.html">Equipment</a></li><li><a href="Game.html">Game</a></li><li><a href="GameMap.html">GameMap</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="Heap.html">Heap</a></li><li><a href="Inventory.html">Inventory</a></li><li><a href="PathNode.html">PathNode</a></li><li><a href="Player.html">Player</a></li><li><a href="Projectile.html">Projectile</a></li><li><a href="Squad.html">Squad</a></li><li><a href="Statistics.html">Statistics</a></li><li><a href="Unit.html">Unit</a></li><li><a href="Weapon.html">Weapon</a></li></ul><h3>Global</h3><ul><li><a href="global.html#checkUserId">checkUserId</a></li><li><a href="global.html#comparator">comparator</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#endGame">endGame</a></li><li><a href="global.html#getDashInfo">getDashInfo</a></li><li><a href="global.html#heuristic">heuristic</a></li><li><a href="global.html#loadMaps">loadMaps</a></li><li><a href="global.html#removeGame">removeGame</a></li><li><a href="global.html#removeSocket">removeSocket</a></li><li><a href="global.html#setUpPlayer">setUpPlayer</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#updateAdmins">updateAdmins</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 30 2017 20:50:43 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

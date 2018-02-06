@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Projectile</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: Projectile</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>Projectile<span class="signature">(tags, position, hitbox, id, image, damage, direction, speed, range, player)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Class representing a Projectile.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="Projectile"><span class="type-signature"></span>new Projectile<span class="signature">(tags, position, hitbox, id, image, damage, direction, speed, range, player)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Creates a projectile object
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tags</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;String></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the tags associated with this projectile</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>position</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Vector</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the position of this projectile</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hitbox</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Vector</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the hitbox size of this projectile</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the id of this projectile</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>image</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the image associated with this Projectile</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>damage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the damage this projectile will do if it hits an enemy</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>direction</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Vector</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the direction this projectile will move in</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>speed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the speed of this Projectile</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>range</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the distance this projectile can travel before being deleted</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>player</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Player.html">Player</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the player that shot this projectile</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_GameObject_Projectile.js.html">server/GameObject/Projectile.js</a>, <a href="server_GameObject_Projectile.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="GameObject.html">GameObject</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="checkCollision"><span class="type-signature"></span>checkCollision<span class="signature">()</span><span class="type-signature"> &rarr; {*}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    checkCollision - checks to see if this projectile is colliding with any GameObjects
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_GameObject_Projectile.js.html">server/GameObject/Projectile.js</a>, <a href="server_GameObject_Projectile.js.html#line59">line 59</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    returns false if there is no collision, otherwise returns the GameObject collided with
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="collision"><span class="type-signature"></span>collision<span class="signature">(o)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    collision - checks to see if this gameObject is colliding with another by checkingfor hitbox collisions
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>o</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="GameObject.html">GameObject</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the game object to check with</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="GameObject.html#collision">GameObject#collision</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_GameObject_GameObject.js.html">server/GameObject/GameObject.js</a>, <a href="server_GameObject_GameObject.js.html#line48">line 48</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    true if there is a collision, false otherwise
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="distanceTravelled"><span class="type-signature"></span>distanceTravelled<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    distanceTravelled - returns the distance this projectile has travelled since creation
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_GameObject_Projectile.js.html">server/GameObject/Projectile.js</a>, <a href="server_GameObject_Projectile.js.html#line106">line 106</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    the distance travelled
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="inBoundingBox"><span class="type-signature"></span>inBoundingBox<span class="signature">(o)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    inBoundingBox - returns true if the object o is within this projectiles bounding box
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>o</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="GameObject.html">GameObject</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object to check</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_GameObject_Projectile.js.html">server/GameObject/Projectile.js</a>, <a href="server_GameObject_Projectile.js.html#line47">line 47</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    true
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="move"><span class="type-signature"></span>move<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    move - moves this projectile according to its current velocity and checks to seeif it is out of bounds or has travelled passed its range, resulting in a deletition of this object
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_GameObject_Projectile.js.html">server/GameObject/Projectile.js</a>, <a href="server_GameObject_Projectile.js.html#line117">line 117</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    update - updates this projectiles position and checks for collision
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="GameObject.html#update">GameObject#update</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_GameObject_Projectile.js.html">server/GameObject/Projectile.js</a>, <a href="server_GameObject_Projectile.js.html#line80">line 80</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Armor.html">Armor</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Equipment.html">Equipment</a></li><li><a href="Game.html">Game</a></li><li><a href="GameMap.html">GameMap</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="Heap.html">Heap</a></li><li><a href="Inventory.html">Inventory</a></li><li><a href="PathNode.html">PathNode</a></li><li><a href="Player.html">Player</a></li><li><a href="Projectile.html">Projectile</a></li><li><a href="Squad.html">Squad</a></li><li><a href="Statistics.html">Statistics</a></li><li><a href="Unit.html">Unit</a></li><li><a href="Weapon.html">Weapon</a></li></ul><h3>Global</h3><ul><li><a href="global.html#checkUserId">checkUserId</a></li><li><a href="global.html#comparator">comparator</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#endGame">endGame</a></li><li><a href="global.html#getDashInfo">getDashInfo</a></li><li><a href="global.html#heuristic">heuristic</a></li><li><a href="global.html#loadMaps">loadMaps</a></li><li><a href="global.html#removeGame">removeGame</a></li><li><a href="global.html#removeSocket">removeSocket</a></li><li><a href="global.html#setUpPlayer">setUpPlayer</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#updateAdmins">updateAdmins</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 30 2017 20:50:43 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

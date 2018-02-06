@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Player</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: Player</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>Player<span class="signature">(username, game, socket)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Class representing a Player object in a Game</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="Player"><span class="type-signature"></span>new Player<span class="signature">(username, game, socket)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Creates a player object
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>username</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the username associated with this player</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>game</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Game.html">Game</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the game that this player is being placed into</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>socket</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Socket</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the socket this player will use for communication with the client</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_Player.js.html">server/Player.js</a>, <a href="server_Player.js.html#line33">line 33</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="addSquad"><span class="type-signature"></span>addSquad<span class="signature">(squad)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    addSquad - Adds the given squad to this players array of squads
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>squad</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Squad.html">Squad</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">squad to be added to this players squad</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_Player.js.html">server/Player.js</a>, <a href="server_Player.js.html#line299">line 299</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="clickRotationHelper"><span class="type-signature"></span>clickRotationHelper<span class="signature">(squad, mouse)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    clickRotationHelper - this is just a helper method to handle the multiple clickrotations that are needed to select squads
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>squad</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">squad we are trying to select</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mouse</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">mouse click locations</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_Player.js.html">server/Player.js</a>, <a href="server_Player.js.html#line178">line 178</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    properly rotated points
+</div>
+
+
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="keyChange"><span class="type-signature"></span>keyChange<span class="signature">(keys)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    keyChange - Called when the client associated with this player presses or releases a key
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>keys</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object representing which keys are currently being pressed</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_Player.js.html">server/Player.js</a>, <a href="server_Player.js.html#line288">line 288</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="leftclick"><span class="type-signature"></span>leftclick<span class="signature">(mouse)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    leftclick - Called when the client associated with this player clicks the left mouse button.	If the player is in Command mode, it will attempt to select this players units	Else the players King unit will perform an attack in the direction of the mouse
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mouse</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">represents the direction and position of the mouse on the client side, recorded when the player clicks</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_Player.js.html">server/Player.js</a>, <a href="server_Player.js.html#line70">line 70</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="removeSquad"><span class="type-signature"></span>removeSquad<span class="signature">(s)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    removeSquad - Removes the given squad from this Players array of squads
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>s</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Squad.html">Squad</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">squad to be removed</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_Player.js.html">server/Player.js</a>, <a href="server_Player.js.html#line320">line 320</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="rightclick"><span class="type-signature"></span>rightclick<span class="signature">(mouse)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    rightClick - Called when the client associated with this player right clicks, will move  the selected units to the clicked location
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mouse</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object representation containing the mouse position of the click</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_Player.js.html">server/Player.js</a>, <a href="server_Player.js.html#line268">line 268</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="toggleMode"><span class="type-signature"></span>toggleMode<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    toggleMode - Toggles the mode of this player between mode.COMMAND and mode.BATTLE and thennotifies the client this player is associated with. This funciton handles themode switch for the King unit as well, toggling between player controlled and the AI
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_Player.js.html">server/Player.js</a>, <a href="server_Player.js.html#line240">line 240</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Armor.html">Armor</a></li><li><a href="Dice.html">Dice</a></li><li><a href="Equipment.html">Equipment</a></li><li><a href="Game.html">Game</a></li><li><a href="GameMap.html">GameMap</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="Heap.html">Heap</a></li><li><a href="Inventory.html">Inventory</a></li><li><a href="PathNode.html">PathNode</a></li><li><a href="Player.html">Player</a></li><li><a href="Projectile.html">Projectile</a></li><li><a href="Squad.html">Squad</a></li><li><a href="Statistics.html">Statistics</a></li><li><a href="Unit.html">Unit</a></li><li><a href="Weapon.html">Weapon</a></li></ul><h3>Global</h3><ul><li><a href="global.html#checkUserId">checkUserId</a></li><li><a href="global.html#comparator">comparator</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#endGame">endGame</a></li><li><a href="global.html#getDashInfo">getDashInfo</a></li><li><a href="global.html#heuristic">heuristic</a></li><li><a href="global.html#loadMaps">loadMaps</a></li><li><a href="global.html#removeGame">removeGame</a></li><li><a href="global.html#removeSocket">removeSocket</a></li><li><a href="global.html#setUpPlayer">setUpPlayer</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#updateAdmins">updateAdmins</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 30 2017 20:50:43 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

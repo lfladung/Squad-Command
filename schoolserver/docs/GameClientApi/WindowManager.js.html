@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: WindowManager.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: WindowManager.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Handles renderings
+ */
+class WindowManager
+{
+  /**
+   * Constructs WindowManager object
+   * @param {*} state 
+   *  Relevant state information
+   * @param {*} map 
+   *  Current map to render
+   */
+  constructor(state, map)
+  {
+    this.images = {}; // use this so we don't have to reload images at every frame
+    this.state = state;
+    this.ctx = state.canvas.getContext('2d');
+    this.map = new Image();
+    this.map.src = map;
+    this.render = this.render.bind(this);
+  }
+
+  /**
+   * Zooms in for battle mode
+   */
+  zoomIn()
+  {
+    this.state.magnification = MAX_ZOOM;
+    this.ctx.translate(this.state.canvas.width / 2, this.state.canvas.height / 2);
+    this.ctx.scale(this.state.magnification, this.state.magnification);
+    this.ctx.translate(-this.state.canvas.width / 2, -this.state.canvas.height / 2);
+  }
+
+  /**
+   * Return to command mode 
+   */
+  zoomOut()
+  {
+    this.ctx.translate(this.state.canvas.width / 2, this.state.canvas.height / 2);
+    this.ctx.scale(1 / this.state.magnification, 1 / this.state.magnification);
+    this.ctx.translate(-this.state.canvas.width / 2, -this.state.canvas.height / 2);
+    this.state.magnification = MIN_ZOOM;
+  }
+
+  /**
+   * Render objects
+   * @param {*} objects 
+   *  Specified objects to be rendered
+   */
+  renderItems(objects)
+  {
+    this.ctx.clearRect(0, 0, 500, 500);
+    var c = this.ctx;
+    c.drawImage(this.map, this.state.center.x - this.state.canvas.width / 2,
+      this.state.center.y - this.state.canvas.height / 2, this.state.canvas.width,
+      this.state.canvas.height,
+      0, 0, this.state.canvas.width, this.state.canvas.height);
+
+    var self = this;
+    if (this.state.mode == mode.BATTLE)
+    {
+      objects.troops.forEach(function(t)
+      {
+        if (t.ownerId == self.state.socket.id &amp;&amp; t.isKing)
+        {
+          self.state.center.x = t.position.x;
+          self.state.center.y = t.position.y;
+        }
+      });
+    }
+
+    objects.projectiles.forEach(this.render);
+    objects.troops.forEach(this.render);
+    objects.obstacles.forEach(this.render);
+    this.ctx.restore();
+  }
+
+  /**
+   * Render health bars above units
+   * @param {*} o 
+   *  Specified units
+   */
+  renderHP(o)
+  {
+    var pos = {
+      x: this.state.canvas.width / 2 - (this.state.center.x - o.position.x),
+      y: this.state.canvas.height / 2 - (this.state.center.y - o.position.y)
+    }
+    this.ctx.fillStyle = "#000000";
+    this.ctx.strokeRect(pos.x - o.hitbox.x / 2, pos.y - o.hitbox.y - 15 / 2, 10, 5);
+    this.ctx.fillStyle = "#00FF00";
+    this.ctx.fillRect(pos.x - o.hitbox.x / 2, pos.y - o.hitbox.y - 14 / 2, o.hp.current, 4);
+    this.ctx.fillStyle = "#FF0000";
+    this.ctx.fillRect(pos.x - o.hitbox.x / 2 + o.hp.current, pos.y - o.hitbox.y - 14 / 2, o.hp.max - o.hp.current, 4);
+
+  }
+
+  /**
+   * Render specific object
+   * @param {*} o 
+   *  Specified object
+   */
+  render(o)
+  {
+    var pos = {
+      x: this.state.canvas.width / 2 - (this.state.center.x - o.position.x),
+      y: this.state.canvas.height / 2 - (this.state.center.y - o.position.y)
+    }
+
+    if (o.image)
+    {
+      if (o.image == 'troop.png')
+      {
+        this.renderHP(o);
+        o.image = (o.ownerId === this.state.socket.id) ? 'friendly.png' : 'enemy.png';
+        if (o.image === 'friendly.png' &amp;&amp; this.state.mode === mode.COMMAND &amp;&amp; o.selected.value)
+          o.image = 'selected.png';
+      }
+      if (!this.images[o.image])
+      {
+        this.images[o.image] = new Image();
+        this.images[o.image].src = 'client/assets/' + o.image;
+      }
+      this.ctx.drawImage(this.images[o.image], pos.x - o.hitbox.x / 2, pos.y - o.hitbox.y / 2, o.hitbox.x, o.hitbox.y);
+    }
+    else
+      this.ctx.fillRect(pos.x - o.hitbox.x / 2, pos.y - o.hitbox.y / 2, o.hitbox.x, o.hitbox.y);
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Model.html">Model</a></li><li><a href="State.html">State</a></li><li><a href="WindowManager.html">WindowManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeType">changeType</a></li><li><a href="global.html#displayGames">displayGames</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#mode">mode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 30 2017 20:58:22 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

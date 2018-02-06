@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Controller portion of MVC framework
+ */
+class Controller
+{
+	/**
+	 * Constructor for our Conroller
+	 * @param state
+	 * 		State of the controller
+	 */
+	constructor(state)
+	{
+		this.mouse = {
+			x: null,
+			y: null
+		};
+		this.keys = {
+			up: false,
+			right: false,
+			down: false,
+			left: false
+		};
+		this.state = state;
+		this.offset = state.canvas.getBoundingClientRect();
+	}
+
+	/**
+	 * Detects and updates mouse moved
+	 * @param {*} mouse
+	 * 	mouse position
+	 */
+	mouseMoved(mouse)
+	{
+		this.mouse.x = (mouse.clientX - this.offset.x > 0) ? mouse.clientX - this.offset.x : 0;
+		this.mouse.y = (mouse.clientY - this.offset.y > 0) ? mouse.clientY - this.offset.y : 0;
+	}
+
+	/**
+	 * Verifies mouse within current game window
+	 */
+	checkMouseToWindow()
+	{
+		if (this.state.mode == mode.COMMAND)
+		{
+			let leftBorder = this.state.center.x - this.state.canvas.width / 2;
+			let rightBorder = this.state.center.x + this.state.canvas.width / 2;
+			let topBorder = this.state.center.y - this.state.canvas.height / 2;
+			let bottomBorder = this.state.center.y + this.state.canvas.height / 2;
+
+			let dist = this.mouse.x - this.state.canvas.width / 2;
+			if (Math.abs(dist) > 100)
+			{
+				if (dist &lt; 0 &amp;&amp; leftBorder > 0)
+					this.state.center.x--;
+				else if (rightBorder &lt; 500)
+					this.state.center.x++;
+
+				this.state.center.x = Math.floor(this.state.center.x);
+			}
+
+			dist = this.mouse.y - this.state.canvas.height / 2;
+			if (Math.abs(dist) > 100)
+			{
+				if (dist &lt; 0 &amp;&amp; topBorder > 0)
+					this.state.center.y--;
+				else if (bottomBorder &lt; 500)
+					this.state.center.y++;
+
+				this.state.center.y = Math.floor(this.state.center.y);
+			}
+		}
+	}
+
+	/**
+	 * Redirects information of click and specifies what needs to be done
+	 * @param {*} e
+	 * 		Click information
+	 */
+	click(e)
+	{
+		let that = this,
+			height, width, count = 0;;
+		let which = (e.which == 3) ? 'right' : 'left';
+		let diff = {
+			x: this.mouse.x - this.state.canvas.width / 2,
+			y: this.mouse.y - this.state.canvas.height / 2
+		};
+
+		diff.x /= this.state.magnification;
+		diff.y /= this.state.magnification;
+		let mouse = {
+			x: this.state.center.x + diff.x,
+			y: this.state.center.y + diff.y
+		};
+
+		console.log(mouse);
+
+		// Left click
+		if (which == 'left')
+		{
+			let count = 0; // I'm using a count here, determines drag/drop box vs. click
+
+			// Preparing Canvas
+			let ctx = state.canvas.getContext('2d');
+			ctx.fillStyle = "#FFFFFF";
+
+			// Monitor position of mouse while it is held down
+			$('#theGame').on('mousemove', function(e)
+			{
+				count++;
+
+				// Width/height constantly updated and redraw rectangle
+				width = Math.abs(e.clientX - that.offset.left - mouse.x);
+				height = Math.abs(e.clientY - that.offset.top - mouse.y);
+				ctx.strokeRect(mouse.x, mouse.y, width, height);
+				ctx.stroke();
+				// Will continue until mouseup
+			}).on('mouseup', function(e)
+			{
+				// Turn off the rectangle on mouseup
+				$('#theGame').off('mousemove');
+
+				// This number is arbitrary, essentially if count is less
+				// than the number of ticks inside 'mousemove' then it
+				// will be used as a click, rather than drag/drop box
+				if (count &lt; 1)
+				{
+					state.notify(which + ' click',
+					{
+						mouse: mouse
+					});
+				}
+				else
+				{
+					// If its a drag/drop box, we must specify the dimensions for select
+					state.notify(which + ' click',
+					{
+						mouse:
+						{
+							top: mouse.y,
+							left: mouse.x,
+							bottom: mouse.y + height,
+							right: mouse.x + width
+						}
+					});
+				}
+			});
+		}
+		// Right Click
+		else
+		{
+			this.state.notify(which + ' click',
+			{
+				mouse: mouse
+			});
+		}
+
+	}
+
+	/**
+	 * Notifies servers with specified key change
+	 */
+	notifyServer()
+	{
+		this.state.notify("key change",
+		{
+			keys: this.keys
+		});
+	}
+
+	/**
+	 * Relays keychange information
+	 * @param {*} e
+	 * 	Relevant Key change information on key press
+	 */
+	keyDown(e)
+	{
+		if (e.keyCode != 32)
+		{
+			switch (e.keyCode)
+			{
+				case 87:
+					this.keys.up = true;
+					break;
+				case 68:
+					this.keys.right = true;
+					break;
+				case 83:
+					this.keys.down = true;
+					break;
+				case 65:
+					this.keys.left = true;
+					break;
+			}
+
+			this.notifyServer();
+		}
+		else
+			this.state.notify("toggle mode");
+	}
+
+	/**
+	 * Relays proper information on key release
+	 * @param {*} e
+	 */
+	keyUp(e)
+	{
+		switch (e.keyCode)
+		{
+			case 87:
+				this.keys.up = false;
+				break;
+			case 68:
+				this.keys.right = false;
+				break;
+			case 83:
+				this.keys.down = false;
+				break;
+			case 65:
+				this.keys.left = false;
+				break;
+		}
+
+		this.notifyServer();
+	}
+}
+
+
+
+/**
+ * emit -
+ *  &lt;li> "end game" = end the selected game
+ *  &lt;li> "message" = send a message to the server and other client
+ *	&lt;li> "start" = tells player what kind of client (admin or commander) this client is
+ *  &lt;li> "right click" = tells the server there was a right click
+ *  &lt;li> "left click" = tells the server there was a left click
+ */
+function emit()
+{
+
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Controller.html">Controller</a></li><li><a href="Model.html">Model</a></li><li><a href="State.html">State</a></li><li><a href="WindowManager.html">WindowManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeType">changeType</a></li><li><a href="global.html#displayGames">displayGames</a></li><li><a href="global.html#emit">emit</a></li><li><a href="global.html#mode">mode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 30 2017 20:58:22 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

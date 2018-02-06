@@ -1,0 +1,34 @@
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 25%;
+    overflow-y: "scroll";
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+#games, #sockets, #selected {
+  height: 75%;
+  overflow-y: auto;
+  margin: 10px;
+}
+
+.container {
+  display: flex;
+}
+
+.container > div {
+  flex: 1;
+}
+
+#msgs {
+  border: 1px solid #dddddd;
+}

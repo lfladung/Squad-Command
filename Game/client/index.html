@@ -1,0 +1,254 @@
+<html>
+
+  <head>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="client/css/style.css">
+    <script src="client/js/State.js"></script>
+    <script src="client/js/WindowManager.js"></script>
+    <script src="client/js/Controller.js"></script>
+    <audio id="soundtrack" preload="auto" src="/client/media/sounds/war.mp3" loop="true" volume=".35" autobuffer>
+    Unsupported in Firefox
+  </audio>
+    <title>Squad Command!</title>
+  </head>
+
+  <body>
+    <div>
+      <input type="button" name="Menu" id="menubtn" value="Menu"></input>
+      <img id="muteicon" src="/client/media/img/Speaker_Icon.png" height="14px">
+      <input id="volumeslider" type="range" min="0" max="1" value=".35" step=".05"></input>
+    </div>
+    <div>
+      <canvas id="theGame" width="500" height="500"></canvas>
+    </div>
+    <div id="wrapper">
+      <div id="chat"></div>
+      <form id="messageForm" onsubmit="return false;">
+        <label for="message" id="message_label"></label>
+        <input type="text" name="message" id="message" value="" class="text-input"></input>
+        <label class="error" for="message" name="message_error" id="message_error">This field is required.</label>
+        <input name="submit" type="submit" class="noRefreshButton" id="submit" value="Send"></input>
+      </form>
+    </div>
+  </body>
+  <script>
+    $(document).ready(function()
+    {
+      username = window.name; //localStorage.getItem("user");
+      $('.error').hide();
+      // stops right click from bringing up the context menu
+      $('#theGame').bind('contextmenu', function(e)
+      {
+        return false;
+      });
+      socket = io();
+      start();
+      var state;
+      var windowManager;
+      var controller;
+      socket.on('setup', setup);
+      socket.on('game over', redirect);
+
+      $("#menubtn").click(redirect);
+      var song = document.getElementsByTagName('audio')[0];
+      var played = false;
+
+      if (!played)
+      {
+        song.play();
+        played = true;
+      }
+
+      var muted = false;
+      var mutebtn = document.getElementById("#mutebtn");
+      var audio = document.getElementById("soundtrack");
+      var volumeslider = document.getElementById("volumeslider");
+      var prevousVol = audio.volume = .0;
+
+      volumeslider.addEventListener("mousemove", function()
+      {
+        if (!muted)
+        {
+          audio.volume = prevousVol = this.value;
+        }
+      });
+
+      $("#messageForm").submit(function()
+      {
+        var message = $("#message").val();
+        $(function()
+        {
+          $(".noRefreshButton").click(function()
+          {
+            $('.error').hide();
+            var text = $("input#message").val();
+            if (text == "")
+            {
+              $("label#message_error").show();
+              $("input#message").focus();
+              return false;
+            }
+          });
+        });
+
+        socket.emit('message', $('#message').val());
+      });
+
+      $(function()
+      {
+        socket.on('message', function(data)
+        {
+          console.log(data);
+          $('#chat').append($('<p>').text(data.username + ": " + data.msg));
+        });
+      });
+
+      $("#muteicon").click(function()
+      {
+        mute(this);
+      });
+
+      /**
+       * Mutes the game  music
+       */
+      function mute(img)
+      {
+        if (muted)
+        {
+          muted = false;
+          img.src = "/client/media/img/Speaker_Icon.png";
+          audio.volume = prevousVol;
+        }
+        else
+        {
+          muted = true;
+          img.src = "/client/media/img/Mute_Icon.png";
+          audio.volume = 0;
+        }
+      }
+    });
+
+    /**
+     * Start default page with regular player attributes
+     */
+    function start()
+    {
+      socket.emit('start',
+      {
+        uType: 0,
+        username: username
+      });
+    }
+
+    /**
+     * Setup game for players
+     * @param {*} data
+     *  All the information relevant to the player, squads, units, etc.
+     */
+    function setup(data)
+    {
+      socket.id = data.id;
+      var canvas = document.getElementById("theGame");
+      state = new State(socket, canvas);
+      windowManager = new WindowManager(state, 'client/assets/' + data.map);
+      controller = new Controller(state);
+
+      socket.on('update', update);
+      socket.on('mode', setMode);
+      socket.on('game over', updateStats);
+
+      $('#theGame').mousedown((e) => mouseDown(e));
+      $('#theGame').mouseup((e) => mouseUp(e));
+      canvas.onmousemove = function(mouse)
+      {
+        controller.mouseMoved(mouse);
+      }
+      window.addEventListener("keydown", (e) => controller.keyDown(e), false);
+      window.addEventListener("keyup", (e) => controller.keyUp(e), false);
+    }
+
+    /**
+     * Update click and windowmanager details
+     * @param {*} data
+     *  Data to be rendered and updated upon player interaction
+     */
+    function update(data)
+    {
+      controller.checkMouseToWindow();
+      windowManager.renderItems(data, controller.mouse);
+    }
+
+    /**
+     * Redirect the page to home
+     */
+    function redirect()
+    {
+      window.location.href = 'http://proj-309-gk-b-7.cs.iastate.edu/';
+    }
+
+    /**
+     * Update palyer statistics after match
+     */
+    function updateStats(data)
+    {
+      var s = document.createElement("script");
+      s.src = "http://proj-309-gk-b-7.cs.iastate.edu/menu/playerStats.php?x=" + JSON.stringify(data);
+      document.body.appendChild(s);
+    }
+
+    function mouseUp(mouse)
+    {
+      if (mouse.which === 3) return;
+      if (state.dragBox)
+      {
+        controller.select(mouse);
+        state.dragBox = false;
+      }
+      else
+        controller.click(mouse);
+      state.mouseDown = false;
+      state.dragStart = {
+        x: undefined,
+        y: undefined
+      };
+    }
+
+    function mouseDown(mouse)
+    {
+      if (state.mode === mode.BATTLE || mouse.which === 3)
+        controller.click(mouse);
+      else
+      {
+        state.dragStart = {
+          x: controller.mouse.x,
+          y: controller.mouse.y
+        };
+
+        console.log(state.dragStart);
+        state.mouseDown = true;
+        setTimeout(function()
+        {
+          if (state.mouseDown)
+            state.dragBox = true;
+        }, 100);
+      }
+    }
+
+    /**
+     * Set the attack mode for players
+     * @param {*} data
+     *   Determines if player will zoom in or out
+     */
+    function setMode(data)
+    {
+      state.mode = data.mode;
+      if (data.mode == mode.BATTLE)
+        windowManager.zoomIn();
+      else
+        windowManager.zoomOut();
+    }
+
+  </script>
+
+</html>

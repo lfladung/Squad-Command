@@ -1,0 +1,136 @@
+<head>
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="client/css/style.css">
+  <script src="client/js/WindowManager.js"></script>
+  <script src="client/js/State.js"></script>
+  <script src="client/js/specController.js"></script>
+  <audio id="soundtrack" preload="auto" src="/client/media/sounds/war.mp3" loop="true" volume=".35" autobuffer> Unsupported in Firefox</audio>
+  <title>Squad Command!</title>
+</head>
+
+<body>
+  <div>
+    <input type="button" name="Menu" id="menubtn" value="Menu"></input>
+    <img id="muteicon" src="/client/media/img/Speaker_Icon.png" height="14px">
+    <input id="volumeslider" type="range" min="0" max="1" value=".35" step=".05"></input>
+  </div>
+  <div>
+    <canvas id="theGame" width="500" height="500"></canvas>
+  </div>
+</body>
+<script>
+  $(document).ready(function()
+  {
+    $('.error').hide();
+    // stops right click from bringing up the context menu
+    $('#theGame').bind('contextmenu', function(e)
+    {
+      return false;
+    });
+    socket = io();
+    start();
+    var state;
+    var windowManager;
+    var controller;
+    socket.on('setup', setup);
+    socket.on('game over', redirect);
+
+    $("#menubtn").click(redirect);
+    var song = document.getElementsByTagName('audio')[0];
+    var played = false;
+
+    if (!played)
+    {
+      song.play();
+      played = true;
+    }
+
+    var muted = false;
+    var mutebtn = document.getElementById("#mutebtn");
+    var audio = document.getElementById("soundtrack");
+    var volumeslider = document.getElementById("volumeslider");
+    var prevousVol = audio.volume = .0;
+
+    volumeslider.addEventListener("mousemove", function()
+    {
+      if (!muted)
+      {
+        audio.volume = prevousVol = this.value;
+      }
+    });
+    $("#muteicon").click(function()
+    {
+      mute(this);
+    });
+
+    /**
+     * Mutes the game  music
+     */
+    function mute(img)
+    {
+      if (muted)
+      {
+        muted = false;
+        img.src = "/client/media/img/Speaker_Icon.png";
+        audio.volume = prevousVol;
+      }
+      else
+      {
+        muted = true;
+        img.src = "/client/media/img/Mute_Icon.png";
+        audio.volume = 0;
+      }
+    }
+  });
+
+  /**
+   * Setup game for spectators
+   * @param {*} data
+   *  All the information relevant to the spec
+   */
+  function setup(data)
+  {
+    var canvas = document.getElementById("theGame");
+    state = new State(socket, canvas);
+    windowManager = new WindowManager(state, 'client/assets/' + data.map);
+    controller = new SpecController(state);
+
+    socket.on('update', update);
+    socket.on('game over', redirect);
+
+    canvas.onmousemove = function(mouse)
+    {
+      controller.mouseMoved(mouse);
+    }
+  }
+
+  /**
+   * Start default page with regular player attributes
+   */
+  function start()
+  {
+    socket.emit('start',
+    {
+      uType: 2
+    });
+  }
+
+
+  /**
+   * Update click and windowmanager details
+   * @param {*} data
+   *  Data to be rendered and updated upon player interaction
+   */
+  function update(data)
+  {
+    controller.checkMouseToWindow();
+    windowManager.renderItems(data);
+  }
+
+  function redirect()
+  {
+    window.location.href = 'http://proj-309-gk-b-7.cs.iastate.edu/';
+  }
+
+</script>

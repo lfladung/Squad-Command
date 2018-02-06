@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <button id='map'>Create map</button>
+    <button id='weapon'>Create weapon</button>
+    <button id='armor'>Create armor</button>
+    <script>
+      $(document).ready(function()
+      {
+        $('#map').click(function() { window.location.href = './mapBuilder.html'; });
+        $('#weapon').click(function() { window.location.href = "./weaponBuilder.html"; });
+        $('#armor').click(function() { window.location.href = "./armorBuilder.html"; });
+      });
+    </script>
+  </body>
+</html>

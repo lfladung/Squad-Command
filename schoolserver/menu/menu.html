@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <audio id="soundtrack" preload="auto" src="media/sounds/menu.mp3" loop="true" volume=".35" autobuffer>
+        Unsupported in Firefox
+    </audio>
+    <style>
+        body {
+            background: #777;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            outline: none;
+        }
+
+        input {
+            outline: none;
+        }
+        
+        p {
+            color: #1d1414;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        input#volumeslider {
+            width: 70px;
+            
+        }
+
+        input[type='range'] {
+            -webkit-appearance: none !important;
+            margin: 0px;
+            padding: 0px;
+            background: #333;
+            height: 13px;
+            border-bottom: #000 1px solid;
+        }
+
+        input[type='range']::-ms-fill-lower {
+            background: #333;
+        }
+
+        input[type='range']::-ms-fill-upper {
+            background: #333;
+        }
+
+        input[type='range']::-moz-range-track {
+            border: none;
+            background: #000;
+        }
+
+        input[type='range']::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            background: radial-gradient(#FFF, #000);
+            height: 11px;
+            width: 11px;
+            border-radius: 100%;
+            cursor: pointer;
+        }
+
+        input[type='range']::-moz-range-thumb {
+            background: radial-gradient(#FFF, #000);
+            height: 11px;
+            width: 11px;
+            border-radius: 100%;
+            cursor: pointer;
+        }
+
+        input[type='range']::-ms-thumb {
+            -webkit-appearance: none !important;
+            background: radial-gradient(#FFF, #000);
+            height: 11px;
+            width: 11px;
+            border-radius: 100%;
+            cursor: pointer;
+        }
+
+        .overlay {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: rgb(255, 255, 255);
+            background-color: rgba(255, 255, 255, 0.9);
+            overflow-x: hidden;
+            transition: 0.5s;
+        }
+
+        .overlay-content {
+            position: relative;
+            top: 25%;
+            width: 100%;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .overlay a {
+            padding: 8px;
+            text-decoration: none;
+            font-size: 36px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .overlay a:hover,
+        .overlay a:focus {
+            color: #1d1414;
+        }
+        
+        .overlay .closebtn {
+            position: absolute;
+            top: 20px;
+            right: 45px;
+            font-size: 60px;
+        }
+
+        @media screen and (max-height: 450px) {
+            .overlay a {
+                font-size: 20px
+            }
+            .overlay .closebtn {
+                font-size: 40px;
+                top: 15px;
+                right: 35px;
+            }
+        }
+    </style>
+    <!--<script type="text/javascript" src="dynamicpage.js"></script>-->
+
+    <title>Menu</title>
+</head>
+
+<body>
+    <header>
+        <h1>SQUAD COMMAND</h1>
+        <div id="myNav" class="overlay">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <div class="overlay-content">
+                <div>
+                    <a href="#" id="changePassword">Change Password</a>
+                    <input style="display:none;font-family:verdana" type="text" id="oPass" placeholder="Old password">
+                    <br style="display:none;" id="break1">
+                    <input style="display:none;font-family:verdana" type="text" id="nPass" placeholder="New password">
+                    <br style="display:none;" id="break2">
+                    <input style="display:none;cursor: pointer;font-family:verdana" type="button" id="cPassBtn" value="Change"></input>
+                </div>
+                <div>
+                    <a href="#" id="aboutBtn">About</a>
+                    <p style="display:none;font-family:verdana" id="aboutInfo">
+                        Give us an A pls
+                    </p>
+                </div>
+                <div>
+                    <a href="#" id="contactBtn">Contact</a>
+                    <p style="display:none; font-family:verdana" id="contactInfo">
+                        Connor: cbrust@iastate.edu
+                        <br> Drew: drewu@iastate.edu
+                        <br> Jose: jdlopez@iastate.edu
+                        <br> Logan: Lfladung@iastate.edu
+                    </p>
+                </div>
+                <div>    
+                    <img style="cursor: pointer;" id="muteicon" src="media/img/Speaker_Icon.png" height="14px">
+                    <input style="cursor: pointer;" id="volumeslider" type="range" min="0" max="1" value=".35" step=".05"></input>
+                </div>
+            </div>
+        </div>
+        <nav>
+            <div>
+                <ul class="group">
+                    <input style="cursor: pointer;font-family:verdana" type="button" id="mmBtn" value="Matchmaking"></input>
+                    <br>
+                    <input style="cursor: pointer;font-family:verdana" type="button" id="shopBtn" value="Shop"></input>
+                    <br>
+                    <input style="cursor: pointer;font-family:verdana" type="button" id="inventoryBtn" value="Inventory"></input>
+                    <br>
+                    <input style="cursor: pointer;font-family:verdana" type="button" id="setBtn" value="Settings"></input>
+                    <br>
+                    <input style="cursor: pointer;font-family:verdana" type="button" id="logoutBtn" value="Logout"></input>
+                    <br>
+                </ul>
+            </div>
+        </nav>
+</body>
+<script>
+    $(document).ready(function () {
+        $("#logoutBtn").click(function () {
+            $.get("logout.php", function(data, status){
+                if(data){  
+                    localStorage.removeItem("user");
+                    window.location = "../index.php";
+                }
+            });
+        });
+        $("#mmBtn").click(function () {
+            localStorage.setItem("musicVol", audio.volume);
+            window.location = "lobby.php";
+        });
+        var setBtn = false
+        $("#setBtn").click(function () {
+            document.getElementById("myNav").style.width = "100%";
+        });
+        //Beginning music things
+        function setCookie(c_name, value, exdays) {
+            var exdate = new Date();
+            exdate.setDate(exdate.getDate() + exdays);
+            var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+            document.cookie = c_name + "=" + c_value;
+        }
+
+        function getCookie(c_name) {
+            var i, x, y, ARRcookies = document.cookie.split(";");
+            for (i = 0; i < ARRcookies.length; i++) {
+                x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
+                y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
+                x = x.replace(/^\s+|\s+$/g, "");
+                if (x == c_name) {
+                    return unescape(y);
+                }
+            }
+        }
+
+        var song = document.getElementsByTagName('audio')[0];
+        var played = false;
+        var tillPlayed = getCookie('timePlayed');
+
+        function update() {
+            if (!played) {
+                if (tillPlayed) {
+                    song.currentTime = tillPlayed;
+                    song.play();
+                    played = true;
+                } else {
+                    song.play();
+                    played = true;
+                }
+            } else {
+                setCookie('timePlayed', song.currentTime);
+            }
+        }
+        setInterval(update, 1000);
+
+        var muted = false;
+
+        var mutebtn = document.getElementById("#mutebtn");
+        var audio = document.getElementById("soundtrack");
+        var volumeslider = document.getElementById("volumeslider");
+        audio.volume = .35;
+        var prevousVol = audio.volume;
+        volumeslider.addEventListener("mousemove", function () {
+            if (!muted) {
+                audio.volume = prevousVol = this.value;
+            }
+        });
+        
+        $("#muteicon").click(function () {
+            mute(this);
+        });
+
+        function mute(img) {
+            if (muted) {
+                muted = false;
+                img.src = "media/img/Speaker_Icon.png";
+                audio.volume = prevousVol;
+            } else {
+                muted = true;
+                img.src = "media/img/Mute_Icon.png";
+                audio.volume = 0;
+            }
+        }
+        //End of music things
+
+        $("#changePassword").click(function(){
+            if(document.getElementById("oPass").style.display == "none"){
+                $("#oPass").css("display", "");
+            } else {
+                $("#oPass").css("display", "none");
+            }
+            if(document.getElementById("nPass").style.display == "none"){
+                $("#nPass").css("display", "");
+            } else {
+                $("#nPass").css("display", "none");
+            }
+            if(document.getElementById("break1").style.display == "none"){
+                $("#break1").css("display", "");
+            } else {
+                $("#break1").css("display", "none");
+            }
+            if(document.getElementById("break2").style.display == "none"){
+                $("#break2").css("display", "");
+            } else {
+                $("#break2").css("display", "none");
+            }
+            if (document.getElementById("cPassBtn").style.display == "none") {
+                $("#cPassBtn").css("display", "");
+            } else {
+                $("#cPassBtn").css("display", "none");
+            }
+        });
+
+        $("#aboutBtn").click(function () {
+            if (document.getElementById("aboutInfo").style.display == "none") {
+                $("#aboutInfo").css("display", "");
+            } else {
+                $("#aboutInfo").css("display", "none");
+            }
+        });
+
+        $("#contactBtn").click(function () {
+            if (document.getElementById("contactInfo").style.display == "none") {
+                $("#contactInfo").css("display", "");
+            } else {
+                $("#contactInfo").css("display", "none");
+            }
+        });
+
+    }); // document ready
+    function closeNav() {
+        document.getElementById("myNav").style.width = "0%";
+    }
+   
+    $.get("isLoggedIn.php", function(data, status){
+        console.log(data);
+        if(data == false){
+            window.location = "../index.php";
+        }
+    });  
+
+    $("#cPassBtn").click(function () {
+        $.post("changePassword.php",{
+                oPass: $("#oPass").val(),
+                nPass: $("#nPass").val()
+            },
+            function(result){
+                if(result){
+                    console.log("Password updated");
+                }
+            }
+        );
+    });
+
+</script>
+
+</html>
